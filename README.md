@@ -3,9 +3,9 @@
 Esse workshop tem o objetivo de mostrar as bases do React e nós vamos abordar os seguintes temas:
 
 * Setup
+* JSX
 * Function Components
 * Class Components
-* JSX
 * Props
 * State
 * Hooks
