@@ -24,5 +24,36 @@ Atributos de css seguem o mesmo padrão, por exemplo: `backgroundColor`.
 
 Um atributo que é bem trick é o `class` do HTML que no caso do JSX é `className`.
 
+### Fragment
 
+Todo template precisa de um elemento root, se por acaso seu component precisar ter dois elementos principais, no 
+mesmo nível, você pode utilizar um `Fragment`.
+
+```
+import React, { Fragment } from 'react';
+
+function App() {
+    return (
+        <Fragment>
+            <div>Elemento 1</div>
+            <div>Elemento 2</div>
+        </Fragment>
+    )
+}
+```
+
+Isso pode ser simplificado com a seguinte sintaxe:
+
+```
+import React from 'react';
+
+function App() {
+  return (
+      <>
+        <div>Elemento 1</div>
+        <div>Elemento 2</div>
+      </>
+  )
+}
+```
 
