@@ -1,110 +1,57 @@
-# Componentes
+# State
 
-Componentes são a base do React e uma aplicação será composta por vários deles.
+A estratégia de reatividade do react é muito simples e talvez esteja aí sua beleza.
 
-Function e Class Components são os dois tipos de componentes do React e vamos ver como criar cada um deles.
+Para que o React saiba quando é preciso mudar alguma coisa na tela ele faz a diferenciação entre a árvore de 
+componentes antiga e a atual, mas ele não faz de forma indiscriminada, para que ele dispare a renderização ele 
+precisa ser informado disso e fazemos isso através da mudança de State e Props.
 
-### Function Component
+### State - Class Components
 
-Como o próprio nome diz são componentes representados por funções e hoje é o tipo mais adotado pela comunidade.
+O `state` é o estado de um componente específico e controlado por ele mesmo.
 
-Veja um exemplo básico de um Function Component:
+Vamos ver como isso funciona tanto para class components quanto para function components.
 
-```
-import React from 'react';
-
-const HelloFunction: React.FC = () => {
-    return <div>Hello Function!</div>;
-}
-
-export default HelloFunction;
-```
-
-Ele é basicamente uma função que retorna o conteúdo que será apresentado.
-
-### Class Components
-
-No caso dos Class Components utilizaremos uma `class` para definir nosso componente:
+Primeiro criaremos os components `CounterClass` e `CounterFunction`:
 
 ```
 import React, {Component} from 'react';
 
-class HelloClass extends Component {
+class CounterClass extends Component {
     render() {
         return (
-            <div>
-                Hello Class!
-            </div>
+            <button>Counter Class</button>
         );
     }
 }
 
-export default HelloClass;
+export default CounterClass;
 ```
-
-A grande diferença aqui é que criamos uma classe que herda da classe `Component` do React e precisamos definir o método 
-`render` para informá-la o que será renderizado na tela. 
-
-Existem também vários métodos da classe que são disparados durante o ciclo de vida do componente, mas isso é 
-assunto para um próximo tópico, por enquanto vamos manter simples.
-
-### Composição
-
-Vamos compor o app com nossos componentes?
-
-Apague o conteúdo do App.tsx e import nossos componentes:
 
 ```
 import React from 'react';
-import './App.css';
-import HelloFunction from './components/HelloFunction';
-import HelloClass from './components/HelloClass';
 
-function App() {
+const CounterFunction: React.FC = () => {
     return (
-        <div className="App">
-            <header className="App-header">
-                <HelloFunction/>
-                <HelloClass/>
-            </header>
-        </div>
-    );
-}
-
-export default App;
-```
-
-Vamos criar outro componente para ficar ainda mais claro: `HelloContainer.tsx`
-
-```
-import React from 'react';
-import HelloFunction from "./HelloFunction";
-import HelloClass from "./HelloClass";
-
-const HelloContainer: React.FC = () => {
-    return (
-        <>
-            <HelloFunction/>
-            <HelloClass/>
-        </>
+        <button>Counter Function</button>
     );
 };
 
-export default HelloContainer;
+export default CounterFunction;
 ```
 
-E nosso App.tsx:
+E vamos inseri-los no `App.tsx`:
 
 ```
-import React from 'react';
-import './App.css';
-import HelloContainer from "./components/HelloContainer";
+import CounterClass from "./components/CounterClass";
+import CounterFunction from "./components/CounterFunction";
 
 function App() {
     return (
         <div className="App">
             <header className="App-header">
-                <HelloContainer/>
+                <CounterClass/>
+                <CounterFunction/>
             </header>
         </div>
     );
@@ -113,4 +60,94 @@ function App() {
 export default App;
 ```
 
-Experimentem composição de componentes!
+Por motivo didático vamos fazer algo aqui que não deve ser feito. 
+
+Vamos adicionar o atributo `counter` no `CounterClass`, criar uma função para modificar o valor desse atributo 
+e executar essa função quando o usuário clicar no botão:
+
+```
+import React, {Component} from 'react';
+
+class CounterClass extends Component {
+    counter: number = 0;
+
+    increment() {
+        this.counter++;
+    }
+
+    render() {
+        return (
+            <button onClick={() => this.increment()}>Counter Class {this.counter}</button>
+        );
+    }
+}
+
+export default CounterClass;
+```
+
+O que você acha que vai acontecer quando clicar no botão?
+
+O valor do counter não é atualizado na tela. 
+
+Será que a função não está sendo disparada?
+
+Se colocarmos um console na função vamos identificar que ela está sendo disparada normalmente e o valor está mudando.
+
+Nada muda na tela porque o React precisa ser "avisado" de que uma nova rodada de renderização precisa ser iniciada e 
+faremos isso através do `state`. 
+
+O componente corrigido fica assim:
+
+```
+import React, {Component} from 'react';
+
+class CounterClass extends Component {
+    state = {
+        counter: 0
+    };
+
+    increment() {
+        let {counter} = this.state;
+        counter++;
+        this.setState({counter});
+    }
+
+    render() {
+        return (
+            <button onClick={() => this.increment()}>Counter Class {this.state.counter}</button>
+        );
+    }
+}
+
+export default CounterClass;
+```
+
+### State - Function Components
+
+No caso de Function Components nós também precisamos informar a mudança de `state` para uma nova renderização, mas 
+como não estendemos a class `Component`, não temos acesso ao atributo state e ao método setState, precisamos de 
+outra estratégia.
+
+Antigamente isso era impossível, mas agora temos os `hooks` para salvar o dia!
+
+O nosso componente fica assim:
+
+```
+import React, {useState} from 'react';
+
+const CounterFunction: React.FC = () => {
+    const [counter, setCounter] = useState(0);
+
+    const increment = () => {
+        setCounter(counter + 1);
+    }
+
+    return (
+        <button onClick={increment}>Counter Function {counter}</button>
+    );
+};
+
+export default CounterFunction;
+```
+
+Vamos valar com mais detalhes sobre hooks no próximo capítulo.
