@@ -1,107 +1,27 @@
-# State
+# Props
 
-A estratégia de reatividade do react é muito simples e talvez esteja aí sua beleza.
+Props, nome que vem de propriedades, é a forma pela qual um componente `pai` se comunica com seu componente `filho`.
 
-Para que o React saiba quando é preciso mudar alguma coisa na tela ele faz a diferenciação entre a árvore de 
-componentes antiga e a atual, mas ele não faz de forma indiscriminada, para que ele dispare a renderização ele 
-precisa ser informado disso e fazemos isso através da mudança de State e Props.
+Em 99% dos casos o dado no React segue apenas um fluxo top down, seria um one-way data binding, ou seja, você não 
+vai alterar o valor de uma prop no componente filho.
 
-### State - Class Components
+Se algum dia você precisar(eu nunca precisei) usar two-way data binding você pode utilizar o LinkedStateMixin, mas é 
+uma feature avançada e não fará parte desse workshop. 
 
-O `state` é o estado de um componente específico e controlado por ele mesmo.
+### Props - Class Components
 
-Vamos ver como isso funciona tanto para class components quanto para function components.
+No caso de Class Components props sera um atributo da classe Component.
 
-Primeiro criaremos os components `CounterClass` e `CounterFunction`:
-
-```
-import React, {Component} from 'react';
-
-class CounterClass extends Component {
-    render() {
-        return (
-            <button>Counter Class</button>
-        );
-    }
-}
-
-export default CounterClass;
-```
-
-```
-import React from 'react';
-
-const CounterFunction: React.FC = () => {
-    return (
-        <button>Counter Function</button>
-    );
-};
-
-export default CounterFunction;
-```
-
-E vamos inseri-los no `App.tsx`:
-
-```
-import CounterClass from "./components/CounterClass";
-import CounterFunction from "./components/CounterFunction";
-
-function App() {
-    return (
-        <div className="App">
-            <header className="App-header">
-                <CounterClass/>
-                <CounterFunction/>
-            </header>
-        </div>
-    );
-}
-
-export default App;
-```
-
-Por motivo didático vamos fazer algo aqui que não deve ser feito. 
-
-Vamos adicionar o atributo `counter` no `CounterClass`, criar uma função para modificar o valor desse atributo 
-e executar essa função quando o usuário clicar no botão:
+Vamos experimentar:
 
 ```
 import React, {Component} from 'react';
 
-class CounterClass extends Component {
-    counter: number = 0;
-
-    increment() {
-        this.counter++;
-    }
-
-    render() {
-        return (
-            <button onClick={() => this.increment()}>Counter Class {this.counter}</button>
-        );
-    }
+export interface CounterClassProps{
+    label: string;
 }
 
-export default CounterClass;
-```
-
-O que você acha que vai acontecer quando clicar no botão?
-
-O valor do counter não é atualizado na tela. 
-
-Será que a função não está sendo disparada?
-
-Se colocarmos um console na função vamos identificar que ela está sendo disparada normalmente e o valor está mudando.
-
-Nada muda na tela porque o React precisa ser "avisado" de que uma nova rodada de renderização precisa ser iniciada e 
-faremos isso através do `state`. 
-
-O componente corrigido fica assim:
-
-```
-import React, {Component} from 'react';
-
-class CounterClass extends Component {
+class CounterClass extends Component<CounterClassProps> {
     state = {
         counter: 0
     };
@@ -114,7 +34,9 @@ class CounterClass extends Component {
 
     render() {
         return (
-            <button onClick={() => this.increment()}>Counter Class {this.state.counter}</button>
+            <button onClick={() => this.increment()}>
+                {this.props.label} {this.state.counter}
+            </button>
         );
     }
 }
@@ -122,32 +44,43 @@ class CounterClass extends Component {
 export default CounterClass;
 ```
 
-### State - Function Components
+### Props - Function Components
 
-No caso de Function Components nós também precisamos informar a mudança de `state` para uma nova renderização, mas 
-como não estendemos a class `Component`, não temos acesso ao atributo state e ao método setState, precisamos de 
-outra estratégia.
+No caso dos Function Components, `props` são atributos do primeiro parâmetro da função.
 
-Antigamente isso era impossível, mas agora temos os `hooks` para salvar o dia!
-
-O nosso componente fica assim:
+Nosso componente ficaria assim:
 
 ```
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
-const CounterFunction: React.FC = () => {
-    const [counter, setCounter] = useState(0);
+export interface CounterFunctionProps {
+  label: string;
+}
 
-    const increment = () => {
-        setCounter(counter + 1);
-    }
+const CounterFunction: React.FC<CounterFunctionProps> = ({ label }) => {
+  const [counter, setCounter] = useState(0);
 
-    return (
-        <button onClick={increment}>Counter Function {counter}</button>
-    );
+  const increment = () => {
+    setCounter(counter + 1);
+  };
+
+  return (
+    <button onClick={increment}>
+      {label} {counter}
+    </button>
+  );
 };
 
 export default CounterFunction;
 ```
 
-Vamos valar com mais detalhes sobre hooks no próximo capítulo.
+### Desafio - 5 min
+
+Agora que vimos state e props, vamos lançar um desafio para a criação de um componente para o botão do contador.
+
+Esse componente será utilizado tanto no Class, quanto no Function Component, e terá os seguintes requisitos:
+
+Deverá ter uma propriedade para o texto que será exibido no botão, uma propriedade para mostrar o valor do contador 
+e uma propriedade para o evento de click do botão.
+
+Mão na massa!
