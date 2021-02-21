@@ -57,3 +57,33 @@ function App() {
 }
 ```
 
+### Render condicional
+
+Para quem vem de algum framework como Angular ou Vue, existe uma forma específica para renderizar alguma coisa de 
+forma condicional: `*ngIf` e `v-if`, respectivamente.
+
+No caso do react tudo é mais simples, como usamos JSX é possível inserir expressões no template então basta fazer 
+algo assim:
+
+```
+<div>{isVisible && <MeuComponent/>}</div>
+```
+
+No final do dia o que você precisa saber é Javascript.
+
+### Listas e Keys
+
+A mesma coisa acontece para listas, não temos um `*ngFor` ou um `v-for`. No react você vai iterar no array e pronto:
+
+```
+{meuArray.map((valor)=> <div key={valor}>{valor}</div>)}
+```
+
+Para os olhos mais atentos existe apenas uma peculiaridade, o atributo `key`. O Vue usa o mesmo atributo e o Angular 
+usa o `trackBy` para a mesma estratégia.
+
+Quando renderizamos vários elementos de uma lista ao alterá-la provavelmente não gostaríamos de renderizar todos 
+os elementos novamente. Para isso o React verifica se existe algum elemento novo através do `key` e renderiza 
+somente aquele elemento.
+
+Essa é uma estratégia para otimizar a aplicação.
