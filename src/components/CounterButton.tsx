@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 export interface CounterButtonProps {
   onClick?: () => void;
@@ -6,18 +6,29 @@ export interface CounterButtonProps {
   label: string;
 }
 
+function logDocumentClick() {
+  console.log('cliquei no console');
+}
+
 const CounterButton: React.FC<CounterButtonProps> = ({
   label,
   counter = 0,
   onClick = () => {},
 }) => {
+  useEffect(() => {
+    document.addEventListener('click', logDocumentClick);
+
+    return () => {
+      console.log('removeu');
+      document.removeEventListener('click', logDocumentClick);
+    };
+  }, []);
+
   return (
-    <button style={styles.button} onClick={onClick}>
-      {label}
-      <span style={styles.tag}>
-        {counter}
-      </span>
-    </button>
+      <button style={styles.button} onClick={onClick}>
+        {label}
+        <span style={styles.tag}>{counter}</span>
+      </button>
   );
 };
 
@@ -35,7 +46,7 @@ const styles = {
     display: 'flex',
     borderRadius: '50%',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 };
 

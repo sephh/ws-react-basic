@@ -7,7 +7,6 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <CounterClass label={'Counter Class'} />
         <CounterFunction label={'Counter Function'} />
       </header>
     </div>
